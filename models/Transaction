@@ -1,0 +1,38 @@
+class Transaction {
+    constructor(inputUTXOs, outputUTXOs) {
+        this.inputUTXOs = inputUTXOs;
+        this.outputUTXOs = outputUTXOs;
+        this.fee;
+    }
+
+    validate() {
+        if (this.inputUTXOs.some(x => x.spent))
+            throw 'Some transactions have been spent!'
+        
+        var inputTotal = 0;
+        var outputTotal = 0;
+
+        for (var i = 0; i < this.inputUTXOs.length; i++) {
+            inputTotal = inputTotal + this.inputUTXOs[i].amount;
+        }
+
+        for (var i = 0; i < this.outputUTXOs.length; i++) {
+            outputTotal = outputTotal + this.outputUTXOs[i].amount;
+        }
+
+        if (inputTotal < outputTotal)
+            throw 'Not enough for the transaction!'
+    }
+
+    execute() {
+        this.validate();
+
+        for (var i = 0; i < this.inputUTXOs.length; i++) {
+            this.inputUTXOs[i].spend();
+        }
+
+        this.fee = inputTotal - outputTotal;
+    }
+}
+
+module.exports = Transaction;
